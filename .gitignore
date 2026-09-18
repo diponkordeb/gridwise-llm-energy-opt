@@ -1,0 +1,27 @@
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# Python cache & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Environment secrets
+.env
+.env.local
+*.pem
+*.key
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Scratch / temporary test files
+scratch/
+*.log
