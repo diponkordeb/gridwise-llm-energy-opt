@@ -1,6 +1,6 @@
 import logging
 from fastapi import FastAPI, HTTPException, status, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.exceptions import RequestValidationError
 
 from app.schemas import ScenarioRequest, OptimizationResponse, HealthResponse
@@ -16,6 +16,16 @@ app = FastAPI(
     description="LLM-Assisted Operator Directive Interpretation and 24-Hour Battery Energy Scheduling API",
     version="2.0.0"
 )
+
+
+@app.get("/")
+def root():
+    """Root route redirecting to interactive documentation."""
+    return {
+        "message": "Welcome to GridWise Smart Campus Energy Optimization API.",
+        "health_check": "/health",
+        "documentation": "/docs"
+    }
 
 
 @app.get("/health", response_model=HealthResponse, status_code=status.HTTP_200_OK)
