@@ -430,6 +430,7 @@ def optimize_energy(request: ScenarioRequest):
     """
     Main LLM interpretation + 24-hour optimization endpoint.
     """
+    logger.info(f"==> POST /optimize-energy received for scenario_id: '{request.scenario_id}' with {len(request.operator_notes)} notes.")
     try:
         # Step 1: LLM Interpretation & Guardrail Validation
         interpretations = interpret_operator_notes(
@@ -437,11 +438,16 @@ def optimize_energy(request: ScenarioRequest):
             battery=request.battery
         )
 
+        for interp in interpretations:
+            logger.info(f"   [Note {interp.note_index}] applies={interp.applies} | type={interp.directive_type} | adj={interp.structured_adjustment}")
+
         # Step 2: Optimization Engine
         response = solve_energy_optimization(
             request=request,
             interpretations=interpretations
         )
+
+        logger.info(f"<== Optimization successful! Total cost: {response.total_cost_bdt} BDT, Total grid: {response.total_grid_kwh} kWh.")
 
         return response
 
@@ -456,6 +462,7 @@ def optimize_energy(request: ScenarioRequest):
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Handle malformed or invalid request JSON schema with HTTP 400 as specified in contract."""
+    logger.warning(f"Malformed request payload received: {exc.errors()}")
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
         content={
